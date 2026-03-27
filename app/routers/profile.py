@@ -6,7 +6,7 @@ from app.core.db import get_db
 from app.core.templates import render_template
 from app.services.auth import AuthService
 
-router = APIRouter()
+router = APIRouter(include_in_schema=False)
 auth_service = AuthService()
 
 

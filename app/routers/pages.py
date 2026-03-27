@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, status
 from fastapi.responses import RedirectResponse
 
-router = APIRouter()
+router = APIRouter(include_in_schema=False)
 
 
 @router.get("/")

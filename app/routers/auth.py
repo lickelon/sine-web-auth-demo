@@ -1,5 +1,3 @@
-import re
-
 from fastapi import APIRouter, Depends, Form, Request, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
@@ -7,10 +5,10 @@ from sqlalchemy.orm import Session
 from app.core.db import get_db
 from app.core.templates import render_template
 from app.services.auth import AuthService, DuplicateUsernameError, InvalidCredentialsError
+from app.services.validation import validate_login_form, validate_signup_form
 
-router = APIRouter()
+router = APIRouter(include_in_schema=False)
 auth_service = AuthService()
-USERNAME_PATTERN = re.compile(r"^[A-Za-z0-9_]+$")
 
 
 def _is_authenticated(request: Request) -> bool:
@@ -51,36 +49,6 @@ def _login_context(
     }
 
 
-def _validate_username(username: str) -> str | None:
-    if len(username) < 4:
-        return "아이디는 4자 이상이어야 합니다."
-    if not USERNAME_PATTERN.fullmatch(username):
-        return "아이디는 영문, 숫자, 밑줄(_)만 사용할 수 있습니다."
-    return None
-
-
-def _validate_signup_form(username: str, password: str, nickname: str) -> dict[str, str]:
-    errors: dict[str, str] = {}
-    username_error = _validate_username(username)
-    if username_error:
-        errors["username"] = username_error
-    if len(password) < 8:
-        errors["password"] = "비밀번호는 8자 이상이어야 합니다."
-    if len(nickname) < 2:
-        errors["nickname"] = "닉네임은 2자 이상이어야 합니다."
-    return errors
-
-
-def _validate_login_form(username: str, password: str) -> dict[str, str]:
-    errors: dict[str, str] = {}
-    username_error = _validate_username(username)
-    if username_error:
-        errors["username"] = username_error
-    if not password:
-        errors["password"] = "비밀번호를 입력해 주세요."
-    return errors
-
-
 @router.get("/signup")
 def signup_page(request: Request):
     if _is_authenticated(request):
@@ -101,7 +69,7 @@ def signup(
 
     normalized_username = username.strip()
     normalized_nickname = nickname.strip()
-    errors = _validate_signup_form(normalized_username, password, normalized_nickname)
+    errors = validate_signup_form(normalized_username, password, normalized_nickname)
     if errors:
         return render_template(
             request,
@@ -160,7 +128,7 @@ def login(
         return _redirect_to_profile()
 
     normalized_username = username.strip()
-    errors = _validate_login_form(normalized_username, password)
+    errors = validate_login_form(normalized_username, password)
     if errors:
         return render_template(
             request,
