@@ -1,0 +1,7 @@
+.git
+.serena
+.venv
+__pycache__
+*.pyc
+data/*.db
+

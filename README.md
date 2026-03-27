@@ -32,6 +32,7 @@ FastAPI only 방식으로 만든 SSR 인증 데모입니다.
 | 비밀번호 해시 | `pwdlib[argon2]` | 평문 저장 없이 안전하게 해시 처리 가능 |
 | 실행 환경 | Uvicorn | FastAPI ASGI 서버로 가장 단순한 실행 방식 |
 | 패키지 관리 | `uv` | 의존성 설치와 실행 속도가 빠르고 관리가 단순함 |
+| 컨테이너 실행 | Docker / Docker Compose | 로컬 환경 차이를 줄이고 배포 전 실행 단위를 고정하기 좋음 |
 
 ## 구현 과정
 
@@ -110,6 +111,7 @@ Client
 ```
 
 - 현재 로컬 실행은 `uvicorn` 직접 실행 기준입니다.
+- Docker 기준으로는 `compose.yaml`에서 FastAPI 앱 컨테이너를 먼저 띄우고, 이후 Nginx를 앞단에 붙이는 구조로 확장할 수 있습니다.
 - HTTPS, 도메인, 리버스 프록시는 후속 배포 단계에서 붙이는 구조를 전제로 했습니다.
 
 ## 디렉터리 구조
@@ -129,6 +131,8 @@ data/
 
 ## 실행 방법
 
+### 로컬 실행
+
 ```bash
 uv sync
 uv run uvicorn app.main:app --reload
@@ -136,6 +140,29 @@ uv run uvicorn app.main:app --reload
 
 - 페이지: `http://127.0.0.1:8000`
 - API 문서: `http://127.0.0.1:8000/docs`
+
+### Docker 실행
+
+```bash
+docker compose up --build
+```
+
+- 페이지: `http://127.0.0.1:8000`
+- API 문서: `http://127.0.0.1:8000/docs`
+- SQLite 데이터는 `./data` 디렉터리를 컨테이너의 `/app/data`에 마운트해서 유지합니다.
+
+### Docker 파일 설명
+
+- `Dockerfile`
+  - `python:3.13-slim` 기반
+  - 프로젝트 전체를 복사한 뒤 `pip install .`로 의존성 설치
+  - `uvicorn app.main:app --host 0.0.0.0 --port 8000` 실행
+- `compose.yaml`
+  - `8000:8000` 포트 매핑
+  - `SESSION_SECRET` 환경변수 주입
+  - `./data:/app/data` 볼륨 마운트
+- `.dockerignore`
+  - `.venv`, `.git`, `.serena`, SQLite DB 파일 등 불필요한 파일 제외
 
 ## 인증 방식
 
