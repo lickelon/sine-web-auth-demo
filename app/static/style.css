@@ -112,6 +112,9 @@ a {
     gap: 10px;
 }
 
+.inline-form {
+    margin: 0;
+}
 
 .site-nav a {
     padding: 10px 14px;
@@ -121,6 +124,15 @@ a {
     font-size: 0.95rem;
 }
 
+.nav-button {
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.68);
+    background: rgba(255, 255, 255, 0.52);
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
 
 .content-shell {
     padding: 28px 0;

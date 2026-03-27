@@ -144,6 +144,8 @@ def login_page(request: Request):
     message = None
     if request.query_params.get("registered") == "1":
         message = "회원가입이 완료되었습니다. 로그인해 주세요."
+    if request.query_params.get("logged_out") == "1":
+        message = "로그아웃되었습니다."
     return render_template(request, "login.html", _login_context(message=message))
 
 
@@ -186,3 +188,12 @@ def login(
 
     request.session["user_id"] = user.id
     return RedirectResponse(url="/profile", status_code=status.HTTP_303_SEE_OTHER)
+
+
+@router.post("/logout")
+def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse(
+        url="/login?logged_out=1",
+        status_code=status.HTTP_303_SEE_OTHER,
+    )
