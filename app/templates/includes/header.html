@@ -1,0 +1,17 @@
+<header class="site-header">
+    <a href="/" class="brand">
+        <span class="brand-mark">S</span>
+        <span class="brand-text">
+            <strong>Sine Auth Demo</strong>
+            <small>FastAPI SSR</small>
+        </span>
+    </a>
+    <nav class="site-nav">
+        {% if request.session.get("user_id") %}
+            <a href="/profile">프로필</a>
+        {% else %}
+            <a href="/login">로그인</a>
+            <a href="/signup">회원가입</a>
+        {% endif %}
+    </nav>
+</header>
