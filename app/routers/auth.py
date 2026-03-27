@@ -40,8 +40,10 @@ def _render_auth_response(
     context: dict,
     status_code: int = 200,
 ):
-    template_name = partial_template if _is_htmx_request(request) else page_template
-    return render_template(request, template_name, context, status_code=status_code)
+    is_htmx_request = _is_htmx_request(request)
+    template_name = partial_template if is_htmx_request else page_template
+    response_status_code = 200 if is_htmx_request and status_code >= 400 else status_code
+    return render_template(request, template_name, context, status_code=response_status_code)
 
 
 def _signup_context(
