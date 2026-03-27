@@ -186,6 +186,13 @@ a {
     gap: 8px;
 }
 
+.field-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 20px;
+}
 
 .field span {
     font-size: 0.94rem;
@@ -240,12 +247,37 @@ a {
     font-size: 0.88rem;
 }
 
+.field-hint {
+    font-size: 0.88rem;
+}
 
+.field-hint-muted {
+    color: var(--muted);
+}
 
+.field-hint-success {
+    color: var(--success);
+}
 
+.field-hint-error {
+    color: var(--danger);
+}
 
+.field-indicator {
+    color: var(--muted);
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
 
+.htmx-indicator {
+    opacity: 0;
+    transition: opacity 160ms ease-in;
+}
 
+.htmx-request.htmx-indicator,
+.htmx-request .htmx-indicator {
+    opacity: 1;
+}
 
 .inline-link {
     margin: 0;
