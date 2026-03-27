@@ -5,8 +5,23 @@ services:
     container_name: sine-web
     environment:
       SESSION_SECRET: ${SESSION_SECRET:-dev-session-secret}
-    ports:
-      - "8000:8000"
+      SESSION_HTTPS_ONLY: ${SESSION_HTTPS_ONLY:-true}
+    expose:
+      - "8000"
     volumes:
       - ./data:/app/data
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: sine-web-nginx
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./nginx/www:/var/www/certbot:ro
     restart: unless-stopped

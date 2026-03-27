@@ -15,6 +15,13 @@ from app.routers.profile import router as profile_router
 APP_DIR = Path(__file__).resolve().parent
 
 
+def env_bool(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     init_db()
@@ -26,7 +33,7 @@ app.add_middleware(
     SessionMiddleware,
     secret_key=os.getenv("SESSION_SECRET", "dev-session-secret"),
     same_site="lax",
-    https_only=False,
+    https_only=env_bool("SESSION_HTTPS_ONLY", False),
 )
 app.mount("/static", StaticFiles(directory=str(APP_DIR / "static")), name="static")
 app.include_router(api_router)

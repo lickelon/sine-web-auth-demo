@@ -111,8 +111,8 @@ Client
 ```
 
 - 현재 로컬 실행은 `uvicorn` 직접 실행 기준입니다.
-- Docker 기준으로는 `compose.yaml`에서 FastAPI 앱 컨테이너를 먼저 띄우고, 이후 Nginx를 앞단에 붙이는 구조로 확장할 수 있습니다.
-- HTTPS, 도메인, 리버스 프록시는 후속 배포 단계에서 붙이는 구조를 전제로 했습니다.
+- Docker 기준으로는 `compose.yaml`에서 FastAPI 앱과 Nginx reverse proxy를 함께 실행합니다.
+- HTTPS는 Nginx에서 종료하고, FastAPI는 내부 네트워크에서만 8000 포트로 응답합니다.
 
 ## 디렉터리 구조
 
@@ -144,12 +144,19 @@ uv run uvicorn app.main:app --reload
 ### Docker 실행
 
 ```bash
+mkdir -p nginx/certs
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout nginx/certs/localhost.key \
+  -out nginx/certs/localhost.crt \
+  -subj "/CN=localhost"
 docker compose up --build
 ```
 
-- 페이지: `http://127.0.0.1:8000`
-- API 문서: `http://127.0.0.1:8000/docs`
+- 페이지: `https://localhost`
+- API 문서: `https://localhost/docs`
 - SQLite 데이터는 `./data` 디렉터리를 컨테이너의 `/app/data`에 마운트해서 유지합니다.
+- FastAPI는 내부적으로 `web:8000`에서 실행되고, 외부 공개는 `nginx`가 담당합니다.
+- 브라우저 경고는 self-signed 인증서라서 발생합니다. 운영에서는 Let's Encrypt 같은 실제 인증서로 교체해야 합니다.
 
 ### Docker 파일 설명
 
@@ -158,8 +165,9 @@ docker compose up --build
   - 프로젝트 전체를 복사한 뒤 `pip install .`로 의존성 설치
   - `uvicorn app.main:app --host 0.0.0.0 --port 8000` 실행
 - `compose.yaml`
-  - `8000:8000` 포트 매핑
-  - `SESSION_SECRET` 환경변수 주입
+  - `web`는 내부 `8000` 포트만 노출
+  - `nginx`가 `80`, `443` 포트를 외부에 공개
+  - `SESSION_SECRET`, `SESSION_HTTPS_ONLY` 환경변수 주입
   - `./data:/app/data` 볼륨 마운트
 - `.dockerignore`
   - `.venv`, `.git`, `.serena`, SQLite DB 파일 등 불필요한 파일 제외
