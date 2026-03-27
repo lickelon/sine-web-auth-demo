@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel auth-panel">
+    <div class="panel-copy">
+        <span class="eyebrow">Welcome Back</span>
+        <h1>로그인</h1>
+        <p>로그인 성공 후 프로필 페이지로 이동합니다.</p>
+    </div>
+
+    <form method="post" class="auth-form">
+        {% if message %}
+            <div class="feedback feedback-success">{{ message }}</div>
+        {% endif %}
+        {% if errors.get("form") %}
+            <div class="feedback feedback-error">{{ errors["form"] }}</div>
+        {% endif %}
+
+        <label class="field">
+            <span>아이디</span>
+            <input
+                type="text"
+                name="username"
+                value="{{ form.username }}"
+                autocomplete="username"
+                placeholder="sine_user"
+            >
+            {% if errors.get("username") %}
+                <small class="field-error">{{ errors["username"] }}</small>
+            {% endif %}
+        </label>
+
+        <label class="field">
+            <span>비밀번호</span>
+            <input
+                type="password"
+                name="password"
+                autocomplete="current-password"
+                placeholder="비밀번호 입력"
+            >
+            {% if errors.get("password") %}
+                <small class="field-error">{{ errors["password"] }}</small>
+            {% endif %}
+        </label>
+
+        <button type="submit" class="primary-button">로그인</button>
+    </form>
+
+    <p class="inline-link">처음이신가요? <a href="/signup">회원가입</a></p>
+</section>
+{% endblock %}

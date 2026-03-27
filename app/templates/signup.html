@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel auth-panel">
+    <div class="panel-copy">
+        <span class="eyebrow">Create Account</span>
+        <h1>회원가입</h1>
+        <p>서버가 직접 렌더링하는 흐름으로 계정을 생성합니다.</p>
+    </div>
+
+    <form method="post" class="auth-form">
+        {% if errors.get("form") %}
+            <div class="feedback feedback-error">{{ errors["form"] }}</div>
+        {% endif %}
+
+        <label class="field">
+            <span>아이디</span>
+            <input
+                type="text"
+                name="username"
+                value="{{ form.username }}"
+                autocomplete="username"
+                placeholder="sine_user"
+            >
+            {% if errors.get("username") %}
+                <small class="field-error">{{ errors["username"] }}</small>
+            {% endif %}
+        </label>
+
+        <label class="field">
+            <span>비밀번호</span>
+            <input
+                type="password"
+                name="password"
+                autocomplete="new-password"
+                placeholder="8자 이상 입력"
+            >
+            {% if errors.get("password") %}
+                <small class="field-error">{{ errors["password"] }}</small>
+            {% endif %}
+        </label>
+
+        <label class="field">
+            <span>닉네임</span>
+            <input
+                type="text"
+                name="nickname"
+                value="{{ form.nickname }}"
+                autocomplete="nickname"
+                placeholder="표시할 이름"
+            >
+            {% if errors.get("nickname") %}
+                <small class="field-error">{{ errors["nickname"] }}</small>
+            {% endif %}
+        </label>
+
+        <button type="submit" class="primary-button">계정 만들기</button>
+    </form>
+
+    <p class="inline-link">이미 계정이 있나요? <a href="/login">로그인</a></p>
+</section>
+{% endblock %}
