@@ -22,6 +22,13 @@ def env_bool(name: str, default: bool) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
+def required_env(name: str) -> str:
+    value = os.getenv(name)
+    if value is None or not value.strip():
+        raise RuntimeError(f"{name} environment variable is required.")
+    return value
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     init_db()
@@ -31,7 +38,7 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title="Sine Auth Demo", lifespan=lifespan)
 app.add_middleware(
     SessionMiddleware,
-    secret_key=os.getenv("SESSION_SECRET", "dev-session-secret"),
+    secret_key=required_env("SESSION_SECRET"),
     same_site="lax",
     https_only=env_bool("SESSION_HTTPS_ONLY", False),
 )

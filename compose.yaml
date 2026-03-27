@@ -4,7 +4,7 @@ services:
       context: .
     container_name: sine-web
     environment:
-      SESSION_SECRET: ${SESSION_SECRET:-dev-session-secret}
+      SESSION_SECRET: ${SESSION_SECRET:?SESSION_SECRET is required}
       SESSION_HTTPS_ONLY: ${SESSION_HTTPS_ONLY:-true}
     expose:
       - "8000"
