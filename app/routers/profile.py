@@ -3,6 +3,7 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
+from app.core.time import format_datetime_for_seoul
 from app.core.templates import render_template
 from app.services.auth import AuthService
 
@@ -27,5 +28,6 @@ def profile_page(request: Request, db: Session = Depends(get_db)):
         {
             "page_title": "프로필",
             "user": user,
+            "created_at_display": format_datetime_for_seoul(user.created_at),
         },
     )

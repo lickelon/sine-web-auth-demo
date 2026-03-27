@@ -23,7 +23,7 @@
         </div>
         <div class="profile-item">
             <dt>가입 시각</dt>
-            <dd>{{ user.created_at.strftime("%Y-%m-%d %H:%M") if user.created_at else "-" }}</dd>
+            <dd>{{ created_at_display }}</dd>
         </div>
     </dl>
 </section>
